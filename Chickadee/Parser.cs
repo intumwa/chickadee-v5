@@ -42,11 +42,11 @@ namespace Chickadee
                 }
 
                 //Update ua1 and ua2 web page visits, set IsFileProcessed and WebPageID
-                ua1.IsDomProcessed = true;
-                WebPageVisit.UpdateWebPageVisit(ua1, page);
+                // ua1.IsDomProcessed = true;
+                // WebPageVisit.UpdateWebPageVisit(ua1, page);
 
-                ua2.IsDomProcessed = true;
-                WebPageVisit.UpdateWebPageVisit(ua2, page);
+                // ua2.IsDomProcessed = true;
+                // WebPageVisit.UpdateWebPageVisit(ua2, page);
 
                 page.isUaComputed = true;
                 WebPage.UpdateWebPage(page);
@@ -68,6 +68,7 @@ namespace Chickadee
             Console.WriteLine($"url id: {webPage.ID}, {url}");
 
             var comparisons = Config.GetComparisons();
+            Console.WriteLine($"comparisons length: {comparisons.Count}");
             foreach (var c in comparisons)
             {
                 var uas = c.Split("--");
@@ -79,6 +80,8 @@ namespace Chickadee
                         Console.WriteLine($"UA change {url} {uas[0]}: { ua1Visit.ID}");
                         Console.WriteLine($"UA change {url} {uas[1]}: { ua2Visit.ID}");
                         await ComputeDomChanges(ua1Visit, ua2Visit, webPage);
+                    } else {
+                        Console.WriteLine($"couldn't work out {uas[0]} {uas[1]}");
                     }
                 }
                 catch (Exception e)

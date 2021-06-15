@@ -56,7 +56,7 @@ namespace Chickadee
             {
                 try
                 {
-                    webPageVisit = context.WebPageVisit.Where(v => v.Url.Equals(url)).Where(v => v.ConfigurationUid.Equals(ua)).Where(v => v.IsDomProcessed.Equals(false)).OrderBy(v => v.VisitTime).FirstOrDefault();
+                    webPageVisit = context.WebPageVisit.Where(v => v.Url.Equals(url)).Where(v => v.ConfigurationUid.Equals(ua)).OrderBy(v => v.VisitTime).FirstOrDefault();
                 }
                 catch (Exception e)
                 {

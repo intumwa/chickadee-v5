@@ -1,0 +1,3 @@
+# Chickadee #
+
+The goal of Chickadee is to see what happens when we browse the web without sending information used to generate [browser fingerprints](https://dl.acm.org/doi/abs/10.1145/3386040 "Browser Fingerprinting: A Survey"). We use a custom browser to create different browser environments and measure the breakage of the page's structure. To achieve that, we send two requests to a web page, one with default information and another with restricted information. We analyze the DOM trees received after each request and compute the difference between the DOM trees using the similarity-based tree matching algorithm ([SFTM](https://arxiv.org/abs/2004.12821 "SFTM: Fast Comparison of Web Documents using Similarity-based Flexible Tree Matching")).

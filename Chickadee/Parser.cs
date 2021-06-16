@@ -35,18 +35,7 @@ namespace Chickadee
                     DomChange.SaveDomChange(domChange, ua1, ua2);
 
                     Console.WriteLine();
-                } 
-                else 
-                {
-                    Console.WriteLine($"either file {ua1File} or {ua2File} does not exist.");
                 }
-
-                //Update ua1 and ua2 web page visits, set IsFileProcessed and WebPageID
-                // ua1.IsDomProcessed = true;
-                // WebPageVisit.UpdateWebPageVisit(ua1, page);
-
-                // ua2.IsDomProcessed = true;
-                // WebPageVisit.UpdateWebPageVisit(ua2, page);
 
                 page.isUaComputed = true;
                 WebPage.UpdateWebPage(page);
@@ -65,23 +54,28 @@ namespace Chickadee
         {
             var webPage = WebPage.GetWebPage();
             var url = webPage.Url;
+            Console.WriteLine();
             Console.WriteLine($"url id: {webPage.ID}, {url}");
 
-            var comparisons = Config.GetComparisons();
-            Console.WriteLine($"comparisons length: {comparisons.Count}");
-            foreach (var c in comparisons)
+            var generic = Config.GetGeneric();
+            var configs = Config.GetConfigs(generic);
+
+            Console.WriteLine($"generic is {generic.UID}");
+            Console.WriteLine($"comparisons length: {configs.Count}");
+            Console.WriteLine();
+
+            foreach (var c in configs)
             {
-                var uas = c.Split("--");
                 try { 
-                    var ua1Visit = WebPageVisit.GetVisitByUa(url, uas[0]);
-                    var ua2Visit = WebPageVisit.GetVisitByUa(url, uas[1]);
+                    var ua1Visit = WebPageVisit.GetVisitByUa(url, generic.UID);
+                    var ua2Visit = WebPageVisit.GetVisitByUa(url, c.UID);
                     if (ua1Visit != null && ua2Visit != null)
                     {
-                        Console.WriteLine($"UA change {url} {uas[0]}: { ua1Visit.ID}");
-                        Console.WriteLine($"UA change {url} {uas[1]}: { ua2Visit.ID}");
+                        Console.WriteLine($"UA change {url} {generic.UID}: { ua1Visit.ID}");
+                        Console.WriteLine($"UA change {url} {c.UID}: { ua2Visit.ID}");
                         await ComputeDomChanges(ua1Visit, ua2Visit, webPage);
                     } else {
-                        Console.WriteLine($"couldn't work out {uas[0]} {uas[1]}");
+                        Console.WriteLine($"couldn't work out {generic.UID} {c.UID}");
                     }
                 }
                 catch (Exception e)

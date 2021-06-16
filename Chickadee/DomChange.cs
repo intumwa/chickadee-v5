@@ -14,14 +14,6 @@ namespace Chickadee
         public string Ua2 { get; set; }
         public int Ua1NodesCount { get; set; }
         public int Ua2NodesCount { get; set; }
-        public string UnchangedNodes { get; set; }
-        public int UnchangedNodesCount { get; set; }
-        public string ChangedNodes { get; set; }
-        public int ChangedNodesCount { get; set; }
-        public string InsertedNodes { get; set; }
-        public int InsertedNodesCount { get; set; }
-        public string DeletedNodes { get; set; }
-        public int DeletedNodesCount { get; set; }
         public DateTime Ua1VisitTime { get; set; }
         public DateTime Ua2VisitTime { get; set; }
         public virtual WebPageVisit Ua1Visit { get; set; }
@@ -56,15 +48,6 @@ namespace Chickadee
         {
             var ua1NodesCount = 0;
             var ua2NodesCount = 0;
-            var unchangedNodesCount = 0;
-            var changedNodesCount = 0;
-            var insertedNodesCount = 0;
-            var deletedNodesCount = 0;
-
-            List<string> unchangedNodes = new List<string>();
-            List<string> changedNodes = new List<string>();
-            List<string> insertedNodes = new List<string>();
-            List<string> deletedNodes = new List<string>();
 
             foreach (var edge in edges)
             {
@@ -72,48 +55,7 @@ namespace Chickadee
                 ua1NodesCount += nodesCount[0];
                 ua2NodesCount += nodesCount[1];
 
-                var nodeChange = WebPageMatcher.CheckNodeChange(edge);
-                var tags = WebPageMatcher.FormatTags(edge);
-                var ua1VisitTag = tags[0];
-                var ua2VisitTag = tags[1];
-
-                if (nodeChange.Equals(ChangeType.Unchanged))
-                {
-                    if (!unchangedNodes.Contains(ua1VisitTag) && !changedNodes.Contains(ua1VisitTag) && !insertedNodes.Contains(ua2VisitTag) && !deletedNodes.Contains(ua1VisitTag))
-                        unchangedNodes.Add(ua1VisitTag);
-                    unchangedNodesCount++;
-                }
-                if (nodeChange.Equals(ChangeType.Changed))
-                {
-                    if (!changedNodes.Contains(ua1VisitTag))
-                    {
-                        changedNodes.Add(ua1VisitTag);
-                        unchangedNodes.Remove(ua1VisitTag);
-                    }
-                    changedNodesCount++;
-                } 
-                if (nodeChange.Equals(ChangeType.Inserted))
-                {
-                    if (!insertedNodes.Contains(ua2VisitTag))
-                    {
-                        insertedNodes.Add(ua2VisitTag);
-                        unchangedNodes.Remove(ua2VisitTag);
-                    }
-                    insertedNodesCount++;
-                }
-                if (nodeChange.Equals(ChangeType.Deleted))
-                {
-                    if (!deletedNodes.Contains(ua1VisitTag))
-                    {
-                        deletedNodes.Add(ua1VisitTag);
-                        unchangedNodes.Remove(ua1VisitTag);
-                    }
-                    deletedNodesCount++;
-                }
-
             }
-
-            List<string> newUnchangedNodes = SortUnchangedNodes(unchangedNodes, changedNodes, insertedNodes, deletedNodes);
 
             DomChange change = new DomChange
             {
@@ -122,28 +64,11 @@ namespace Chickadee
                 Ua2 = ua2.ConfigurationUid,
                 Ua1NodesCount = ua1NodesCount,
                 Ua2NodesCount = ua2NodesCount,
-                UnchangedNodes = string.Join(",", newUnchangedNodes),
-                UnchangedNodesCount = unchangedNodesCount,
-                ChangedNodes = string.Join(",", changedNodes),
-                ChangedNodesCount = changedNodesCount,
-                InsertedNodes = string.Join(",", insertedNodes),
-                InsertedNodesCount = insertedNodesCount,
-                DeletedNodes = string.Join(",", deletedNodes),
-                DeletedNodesCount = deletedNodesCount,
                 Ua1VisitTime = ua1.VisitTime,
                 Ua2VisitTime = ua2.VisitTime
             };
 
             return change;
-        }
-
-        private static List<string> SortUnchangedNodes(List<string> unchangedNodes, List<string> changedNodes, List<string> insertedNodes, List<string> deletedNodes)
-        {
-            var list1 = unchangedNodes.Except(changedNodes).ToList();
-            var list2 = list1.Except(insertedNodes).ToList();            
-            var newUnchangedNodes = list2.Except(deletedNodes).ToList();
-
-            return newUnchangedNodes;
         }
 
         public static DomChange GetDomChange(WebPageVisit ua1, WebPageVisit ua2)

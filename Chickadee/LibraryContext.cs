@@ -56,10 +56,6 @@ namespace Chickadee
                 entity.HasKey(e => e.ID);
                 entity.Property(e => e.Ua1NodesCount).IsRequired();
                 entity.Property(e => e.Ua2NodesCount).IsRequired();
-                entity.Property(e => e.UnchangedNodes).IsRequired();
-                entity.Property(e => e.ChangedNodes).IsRequired();
-                entity.Property(e => e.InsertedNodes).IsRequired();
-                entity.Property(e => e.DeletedNodes).IsRequired();
                 entity.HasOne(d => d.Ua1Visit).WithMany(p => p.ua1DomChanges);
                 entity.HasOne(d => d.Ua2Visit).WithMany(p => p.ua2DomChanges);
             });
